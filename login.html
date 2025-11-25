@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Secure login page">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <!--
+        BACKEND INTEGRATION NOTE:
+        
+        This login form is ready for backend integration. To connect it to your server:
+        
+        1. Update the 'action' attribute below with your authentication endpoint URL
+           Example: action="/api/auth/login" or action="https://yourapi.com/login"
+        
+        2. Ensure your backend:
+           - Accepts POST requests
+           - Processes the following form fields:
+             * email (string)
+             * password (string)
+             * remember (boolean, optional)
+           - Returns appropriate success/error responses
+           - Implements CSRF protection if needed (add hidden token field)
+        
+        3. For security, always:
+           - Use HTTPS in production
+           - Validate inputs on the server side (never trust client validation alone)
+           - Implement rate limiting to prevent brute force attacks
+           - Use secure session management
+    -->
+    
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Please login to your account</p>
+            
+            <form id="loginForm" method="post" action="#" novalidate>
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">
+                        Email Address
+                        <span class="required" aria-label="required">*</span>
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        autocomplete="email"
+                        aria-describedby="email-error"
+                        placeholder="you@example.com"
+                    >
+                    <span id="email-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password">
+                        Password
+                        <span class="required" aria-label="required">*</span>
+                    </label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required 
+                            autocomplete="current-password"
+                            aria-describedby="password-error"
+                            placeholder="Enter your password"
+                            minlength="8"
+                        >
+                        <button 
+                            type="button" 
+                            class="toggle-password" 
+                            aria-label="Toggle password visibility"
+                            tabindex="-1"
+                        >
+                            <span class="show-icon" aria-hidden="true">👁️</span>
+                            <span class="hide-icon" aria-hidden="true" style="display: none;">🙈</span>
+                        </button>
+                    </div>
+                    <span id="password-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <div class="checkbox-wrapper">
+                        <input 
+                            type="checkbox" 
+                            id="remember" 
+                            name="remember"
+                            value="true"
+                        >
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    Sign In
+                </button>
+
+                <!-- Additional Links -->
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="#">Sign up</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Client-side validation and password toggle functionality
+        (function() {
+            'use strict';
+
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const togglePasswordBtn = document.querySelector('.toggle-password');
+            const showIcon = document.querySelector('.show-icon');
+            const hideIcon = document.querySelector('.hide-icon');
+
+            // Email validation regex (basic but effective)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            // Validate email field
+            function validateEmail() {
+                const emailError = document.getElementById('email-error');
+                const email = emailInput.value.trim();
+
+                if (!email) {
+                    emailError.textContent = 'Email is required';
+                    emailInput.setAttribute('aria-invalid', 'true');
+                    return false;
+                } else if (!emailRegex.test(email)) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    emailInput.setAttribute('aria-invalid', 'true');
+                    return false;
+                } else {
+                    emailError.textContent = '';
+                    emailInput.setAttribute('aria-invalid', 'false');
+                    return true;
+                }
+            }
+
+            // Validate password field
+            function validatePassword() {
+                const passwordError = document.getElementById('password-error');
+                const password = passwordInput.value;
+
+                if (!password) {
+                    passwordError.textContent = 'Password is required';
+                    passwordInput.setAttribute('aria-invalid', 'true');
+                    return false;
+                } else if (password.length < 8) {
+                    passwordError.textContent = 'Password must be at least 8 characters';
+                    passwordInput.setAttribute('aria-invalid', 'true');
+                    return false;
+                } else {
+                    passwordError.textContent = '';
+                    passwordInput.setAttribute('aria-invalid', 'false');
+                    return true;
+                }
+            }
+
+            // Real-time validation on blur
+            emailInput.addEventListener('blur', validateEmail);
+            passwordInput.addEventListener('blur', validatePassword);
+
+            // Clear error on input
+            emailInput.addEventListener('input', function() {
+                if (this.value) {
+                    document.getElementById('email-error').textContent = '';
+                    this.setAttribute('aria-invalid', 'false');
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                if (this.value) {
+                    document.getElementById('password-error').textContent = '';
+                    this.setAttribute('aria-invalid', 'false');
+                }
+            });
+
+            // Form submission validation
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+
+                if (isEmailValid && isPasswordValid) {
+                    // Form is valid - ready for submission
+                    console.log('Form is valid and ready for submission');
+                    console.log('Email:', emailInput.value);
+                    console.log('Password:', '[HIDDEN]');
+                    console.log('Remember me:', document.getElementById('remember').checked);
+                    
+                    // TODO: Uncomment when backend is ready
+                    // form.submit();
+                    
+                    alert('Form validation passed! In production, this would submit to your backend endpoint.');
+                } else {
+                    // Focus on first invalid field
+                    if (!isEmailValid) {
+                        emailInput.focus();
+                    } else if (!isPasswordValid) {
+                        passwordInput.focus();
+                    }
+                }
+            });
+
+            // Password show/hide toggle
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+
+                // Toggle icons
+                if (type === 'text') {
+                    showIcon.style.display = 'none';
+                    hideIcon.style.display = 'inline';
+                    togglePasswordBtn.setAttribute('aria-label', 'Hide password');
+                } else {
+                    showIcon.style.display = 'inline';
+                    hideIcon.style.display = 'none';
+                    togglePasswordBtn.setAttribute('aria-label', 'Show password');
+                }
+            });
+
+            // Prevent form submission on Enter in password toggle button
+            togglePasswordBtn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
