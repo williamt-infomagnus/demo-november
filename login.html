@@ -76,8 +76,7 @@
                         <button 
                             type="button" 
                             class="toggle-password" 
-                            aria-label="Toggle password visibility"
-                            tabindex="-1"
+                            aria-label="Show password"
                         >
                             <span class="show-icon" aria-hidden="true">👁️</span>
                             <span class="hide-icon" aria-hidden="true" style="display: none;">🙈</span>
@@ -232,9 +231,9 @@
                 }
             });
 
-            // Prevent form submission on Enter in password toggle button
+            // Handle keyboard activation for password toggle button
             togglePasswordBtn.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.click();
                 }
